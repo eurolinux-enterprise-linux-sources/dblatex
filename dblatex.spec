@@ -2,7 +2,7 @@
 
 Name:       dblatex
 Version:    0.3.4
-Release:    10%{?dist}
+Release:    11%{?dist}
 Summary:    DocBook to LaTeX/ConTeXt Publishing
 BuildArch:  noarch
 # Most of package is GPLv2+, except:
@@ -132,6 +132,9 @@ touch -r xsl/mathml2/README README-xsltml
 %postun -p /usr/bin/texhash
 
 %changelog
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.3.4-11
+- Mass rebuild 2013-12-27
+
 * Tue Sep 24 2013 Stanislav Ochotnicky <sochotnicky@redhat.com> - 0.3.4-10
 - Replace /usr/bin/env usage in dblatex script
 - Remove separate docbook license file
