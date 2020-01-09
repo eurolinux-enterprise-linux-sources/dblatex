@@ -1,0 +1,71 @@
+From 42fc41280f42674cefba1b272e2714210ad56478 Mon Sep 17 00:00:00 2001
+From: Stanislav Ochotnicky <sochotnicky@redhat.com>
+Date: Mon, 29 Jul 2013 15:22:37 +0200
+Subject: [PATCH] Make pdf generation work in FIPS mode
+
+---
+ lib/dbtexmf/dblatex/grubber/index.py | 4 ++--
+ lib/dbtexmf/dblatex/grubber/util.py  | 8 ++++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/lib/dbtexmf/dblatex/grubber/index.py b/lib/dbtexmf/dblatex/grubber/index.py
+index 6ee7c68..36becd5 100644
+--- a/lib/dbtexmf/dblatex/grubber/index.py
++++ b/lib/dbtexmf/dblatex/grubber/index.py
+@@ -70,7 +70,7 @@ class Index(TexModule):
+             self.transcript = os.path.basename(self.transcript)
+ 
+         if os.path.exists(self.source):
+-            self.md5 = md5_file(self.source)
++            self.md5 = md5_file(self.source, False)
+         else:
+             self.md5 = None
+ 
+@@ -193,7 +193,7 @@ class Index(TexModule):
+         if os.path.getsize(self.source) == 0:
+             msg.log(_("the index file %s is empty") % self.source, pkg="index")
+             return 0
+-        new = md5_file(self.source)
++        new = md5_file(self.source, False)
+         if not os.path.exists(self.target):
+             self.md5 = new
+             return 1
+diff --git a/lib/dbtexmf/dblatex/grubber/util.py b/lib/dbtexmf/dblatex/grubber/util.py
+index fa3bda6..d664caa 100644
+--- a/lib/dbtexmf/dblatex/grubber/util.py
++++ b/lib/dbtexmf/dblatex/grubber/util.py
+@@ -14,11 +14,11 @@ import os
+ from msg import _, msg
+ 
+ 
+-def md5_file(fname):
++def md5_file(fname, usedforsecurity=True):
+     """
+     Compute the MD5 sum of a given file.
+     """
+-    m = hashlib.md5()
++    m = hashlib.md5(usedforsecurity=usedforsecurity)
+     file = open(fname)
+     for line in file.readlines():
+         m.update(line)
+@@ -35,7 +35,7 @@ class Watcher:
+ 
+     def watch(self, file):
+         if os.path.exists(file):
+-            self.files[file] = md5_file(file)
++            self.files[file] = md5_file(file, False)
+         else:
+             self.files[file] = None
+ 
+@@ -47,7 +47,7 @@ class Watcher:
+         changed = []
+         for file in self.files.keys():
+             if os.path.exists(file):
+-                new = md5_file(file)
++                new = md5_file(file, False)
+                 if self.files[file] != new:
+                     msg.debug(_("%s MD5 checksum changed") % \
+                               os.path.basename(file))
+-- 
+1.8.1.4
+
